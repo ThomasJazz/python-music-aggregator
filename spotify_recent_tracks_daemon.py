@@ -47,6 +47,9 @@ helper.check_and_create_dir(dump_folder)
 # Song history
 track_history = None
 
+# For print statements
+curr_time = helper.get_sql_date_time()
+
 #########################################
 # ------------------------------------- #
 # ------------- Functions ------------- #
@@ -112,12 +115,15 @@ while (True):
     
     new_plays = helper.convert_lst_of_dict_to_lst(new_plays)
 
-    if (num_tracks == 0):
-        print(f'\tWriting {len(new_plays)-1} new plays to {song_tracker_path}')
-        helper.append_to_csv(song_tracker_path, new_plays)
-    elif (len(new_plays) > 0):
-        print(f'\tWriting {len(new_plays)-1} new plays to {song_tracker_path}')
-        helper.append_to_csv(song_tracker_path, new_plays[1:])
+    try:
+        if (num_tracks == 0):
+            print(f'\tWriting {len(new_plays)-1} new plays to {song_tracker_path} @ {curr_time}')
+            helper.append_to_csv(song_tracker_path, new_plays)
+        elif (len(new_plays) > 0):
+            print(f'\tWriting {len(new_plays)-1} new plays to {song_tracker_path} @ {curr_time}')
+            helper.append_to_csv(song_tracker_path, new_plays[1:])
+    except Exception as e:
+        print(f'Failed to write to file')
 
     time.sleep(poll_frequency)
     
