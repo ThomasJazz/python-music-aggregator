@@ -1,4 +1,5 @@
 import os
+import json
 import shutil
 import ntpath
 import hashlib
@@ -9,6 +10,7 @@ from os.path import isfile, join
 from pathlib import Path
 from PIL import Image
 import os
+import pandas as pd
 
 class MethodHelper:
     def __init__(self):
@@ -189,10 +191,11 @@ class MethodHelper:
     @staticmethod
     def file_exists(file_path: str):
         try:
-            if (os.path.exists(file_path) == False) or (os.stat(file_path).st_size == 0):
+            if (os.path.exists(file_path) == False):
                 return False
         except:
             return False
+
         return True
 
 
@@ -273,6 +276,19 @@ class MethodHelper:
     def get_sql_date_time(self):
         return datetime.today().strftime('%Y-%m-%d %H:%M:%S.%f')
 
+    def get_string_hash(self, input_str):
+        hash_obj = hashlib.md5(input_str.encode())
+        return hash_obj.hexdigest()
+    
+    def map_lst_of_dicts_to_dict(self, list_dct, key_map_string):
+        return_dct = {}
+
+        for dct in list_dct:
+            if dct[key_map_string] not in dct:
+                return_dct[dct[key_map_string]] = dct
+
+        return return_dct
+
     ########################################
     # ------------------------------------ #
     # ------------- File I/O ------------- #
@@ -295,13 +311,43 @@ class MethodHelper:
 
             file.writelines(f'%s{rowterminator}' % fieldterminator.join(line) for line in data_lst)
     
+    # Writes 2dlist to csv file
+    def write_to_csv(self, file_path: str, data_lst: list, _delimiter=',', _quoteall=False):
+        with open(file_path, "w", encoding="utf-8", newline="") as file:
+            writer = None
 
+            if (_quoteall):
+                writer = csv.writer(file, delimiter=_delimiter, quoting=csv.QUOTE_ALL)
+            else:
+                writer = csv.writer(file, delimiter=_delimiter)
+
+            writer.writerows(data_lst)
+        return
+
+    # Appends a row of data to file to a csv file
+    def append_to_csv(self, file_path, data_lst: list, _delimiter=',', _quoteall=False):
+        with open(file_path, "a", encoding="utf-8", newline="") as file:
+            writer = None
+
+            if (_quoteall):
+                writer = csv.writer(file, delimiter=_delimiter, quoting=csv.QUOTE_ALL)
+            else:
+                writer = csv.writer(file, delimiter=_delimiter)
+
+            writer.writerows(data_lst)
+        return
+            
+    # Reads a csv file and loads it into a memory using a 2dlist
     def read_csv(self, file_path: str, delimiter=","):
         with open(file_path, encoding="utf-8", newline='') as csvfile:
+            csv.field_size_limit(2147483647)
             csv_read_obj = csv.reader(csvfile, delimiter=delimiter)
             csv_read_lst = list(csv_read_obj)
             return csv_read_lst
-    
+
+    def write_json(self, file_path, json_data, indent=4):
+        with open(file_path, 'w') as outfile:
+            json.dump(json_data, outfile, indent=indent)
 
     ##########################################
     # -------------------------------------- #
@@ -311,12 +357,26 @@ class MethodHelper:
 
     def convert_2dlst_to_lst_of_dict(self, lst_of_lst):
         return_lst = []
+        if not(lst_of_lst):
+            return []
+
         headers_lst = lst_of_lst[0]
         for row in lst_of_lst:
             zipped_dict = dict(zip(headers_lst, row))
             return_lst.append(zipped_dict)
 
         return return_lst
+
+    def convert_lst_of_dict_to_lst(self, dataset: list):
+        res = []
+        for idx, sub in enumerate(dataset, start = 0):
+            if idx == 0:
+                res.append(list(sub.keys()))
+                res.append(list(sub.values()))
+            else:
+                res.append(list(sub.values()))
+
+        return res
 
     def clean_lst(self, dataset, exclude_terms: list):
         clean_data = []

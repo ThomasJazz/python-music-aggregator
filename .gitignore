@@ -2,3 +2,4 @@
 dump/
 env/
 *.pyc
+.vscode/launch.json
