@@ -1,7 +1,7 @@
 # Custom libraries
 from lib import method_helper
 from lib import spotify_helper
-from env import spotify as creds
+from env import spotify_credentials as creds
 
 # Python libraries
 import os
