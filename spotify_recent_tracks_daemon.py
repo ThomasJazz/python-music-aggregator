@@ -1,8 +1,11 @@
 # Custom libraries
 from lib import method_helper
 from lib import spotify_helper
-from env import spotify as creds
+
 # "-u=12850397"
+from env import spotify_credentials as creds
+
+
 # Python libraries
 import os
 import sys
