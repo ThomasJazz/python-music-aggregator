@@ -31,12 +31,12 @@ class SpotifyHelper():
 
         albums = results['items']
         while results['next']:
-            results = spotify.next(results)
+            results = next(results)
             albums.extend(results['items'])
 
         return albums
     
-
+    
     def get_artist_albums_summary(self, artist_id):
         album_info = self.get_artist_albums(artist_id)
         summary = []

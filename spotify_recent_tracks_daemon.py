@@ -2,9 +2,7 @@
 from lib import method_helper
 from lib import spotify_helper
 
-# "-u=12850397"
 from env import spotify_credentials as creds
-
 
 # Python libraries
 import os
@@ -12,6 +10,7 @@ import sys
 import argparse
 import time
 from collections import namedtuple
+import daemon
 
 ########################################
 # ------------------------------------ #
